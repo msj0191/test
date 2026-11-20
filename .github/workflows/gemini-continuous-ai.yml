@@ -1,0 +1,73 @@
+name: Gemini Continuous AI
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+env:
+  GEMINI_CLI_TRUST_WORKSPACE: 'true'
+
+jobs:
+  daily-inspection:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Gemini CLI Inspection
+        uses: google-github-actions/run-gemini-cli@main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          prompt: |
+            Follow the rules in GEMINI.md.
+            Inspect the repository state, missing tests, and documentation mismatches (including README.md, feature_list.json, and progress.txt).
+            Pick at most one independent task from feature_list.json or identified gaps.
+            Propose findings by creating a GitHub Issue or opening a Draft Pull Request targeting master using the gh CLI.
+            Update feature_list.json and progress.txt if changes are proposed.
+            STRICT RULE: Never auto-merge any PR. Only create Draft PRs.
+
+  on-demand-assistant:
+    if: >-
+      (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
+      contains(github.event.comment.body, '@gemini-cli') &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Gemini CLI On-Demand Review
+        uses: google-github-actions/run-gemini-cli@main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          prompt: |
+            Follow the rules in GEMINI.md.
+            A maintainer mentioned @gemini-cli on issue/PR #${ISSUE_NUMBER}.
+            Analyze the request in COMMENT_BODY and inspect the relevant repository files or PR diff.
+            Post a helpful analysis or review comment on #${ISSUE_NUMBER} using the gh CLI.
+            STRICT RULE: Do not approve or auto-merge any PR.
