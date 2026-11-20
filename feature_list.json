@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "updated_at": "2026-11-20",
+  "features": [
+    {
+      "id": "FEAT-001",
+      "title": "Verify GEMINI_API_KEY secret and initial workflow run",
+      "description": "Ensure GEMINI_API_KEY is configured in repository Actions secrets and validate the scheduled/manual continuous AI workflow.",
+      "status": "failing",
+      "priority": "high",
+      "verification_steps": [
+        "Confirm GEMINI_API_KEY is registered in Settings > Secrets and variables > Actions",
+        "Run gemini-continuous-ai workflow manually via workflow_dispatch",
+        "Confirm inspection completes without errors"
+      ],
+      "notes": "Initial template task pending repository secret configuration and first workflow execution."
+    },
+    {
+      "id": "FEAT-002",
+      "title": "Add baseline project tests and documentation checks",
+      "description": "Establish automated tests and keep README.md synchronized with repository structure.",
+      "status": "failing",
+      "priority": "medium",
+      "verification_steps": [
+        "Add test suite for project components",
+        "Verify README.md matches current files and workflows"
+      ],
+      "notes": "Pending initial codebase and test setup."
+    }
+  ]
+}
