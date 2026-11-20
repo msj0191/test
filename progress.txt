@@ -1,0 +1,13 @@
+# Continuous AI Progress Log
+# Format:
+# [YYYY-MM-DD HH:MM UTC] Session / Workflow Run
+# - Task ID: <feature_list.json ID>
+# - Summary: <What was inspected, changed, or verified>
+# - Verification: <Build/test results or issues found>
+# - Handoff Notes: <Next steps, blockers, or recommendations for the next session>
+
+[2026-11-20 00:00 UTC] Initial Setup
+- Task ID: FEAT-001
+- Summary: Added GEMINI.md, feature_list.json, progress.txt, and .github/workflows/gemini-continuous-ai.yml on branch setup/gemini-continuous-ai.
+- Verification: Initial template files created; workflow execution pending GEMINI_API_KEY secret configuration.
+- Handoff Notes: Register GEMINI_API_KEY in Settings > Secrets and variables > Actions, merge the setup PR after human review, and run a manual workflow_dispatch check.
